@@ -36,10 +36,10 @@ void setup()
 	// Inicializa el puerto que se comunica con el bluetooth
 	Serial1.begin(9600);
 
-	// Inicializa la librería Wire
+	// Inicializamos la librería Wire
 	Wire.begin();
 	
-	// Inicializa la resolución del sensor de luz (Wire.begin())
+	// Enviamos al sensor la resolución que queremos utilizar
 	Wire.beginTransmission(direccionBH1750);
 	Wire.write(0x10);
 	Wire.endTransmission();
@@ -143,17 +143,20 @@ void loop()
 uint16_t sensarLuz() {
 
 	// Inicia la transmisión, pide 2 bytes, los almacena y finaliza la transmisión
+	// Como el modo de lectura del sensor es "continuo", tenemos que usar el beginTransmission() y el endTransmission()
 	int bytes_leidos = 0;
+	Wire.beginTransmission( direccionBH1750 );
 	Wire.requestFrom( direccionBH1750, 2 );
 	while( Wire.available() ) {
 		lecturaBH1750[i] = Wire.read();
 		bytes_leidos++;
 	}
+	Wire.endTransmission()
 	
 	// Si leí correctamente los 2 bytes, interpreta la lectura y la devuelve
 	// sino devuelve -1 indicando que no se pudo realizar la lectura 
 	if( bytes_leidos == 2 )
-		return ( ( lecturaBH1750[0] << 8 ) | lecturaBH1750[1] ) /1.2;
+		return ( ( lecturaBH1750[0] << 8 ) | lecturaBH1750[1] ) / 1.2;
 	else
 		return -1;
 }
