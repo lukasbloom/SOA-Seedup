@@ -36,10 +36,10 @@ void setup()
 	// Inicializa el puerto que se comunica con el bluetooth
 	Serial1.begin(9600);
 
-	// Inicializa la librería Wire
+	// Inicializa la librerÃ­a Wire
 	Wire.begin();
 	
-	// Inicializa la resolución del sensor de luz (Wire.begin())
+	// Inicializa la resoluciÃ³n del sensor de luz (Wire.begin())
 	Wire.beginTransmission(direccionBH1750);
 	Wire.write(0x10);
 	Wire.endTransmission();
@@ -57,12 +57,12 @@ void loop()
 		// Hago la lectura del string enviado
 		lecturaBT = Serial1.readString();
 
-		// El string puede contener más de un comando, debo parsearlo
+		// El string puede contener mÃ¡s de un comando, debo parsearlo
 		int maxIndex = lecturaBT.length() ;
 		int strIndex[] = { 0, -1 };
 		String comando;
 		
-		// Recorro caracter por caracter en búsqueda del delimitador "pipe"
+		// Recorro caracter por caracter en bÃºsqueda del delimitador "pipe"
 		// que es el que me define cuando termina y comienza otro comando
 		for( int i = 0; i < maxIndex; i++ ) {
 			if (lecturaBT.charAt(i) == '|') {
@@ -73,13 +73,13 @@ void loop()
 				comando = lecturaBT.substring( strIndex[0], strIndex[1] );
 				Serial.println(comando);
 				
-				// Seteo el modo manual o automático
+				// Seteo el modo manual o automÃ¡tico
 				if( comando == DESACTIVAR_MODO_AUTOMATICO )
 					automatico = 0;
 				else if( comando == ACTIVAR_MODO_AUTOMATICO)
 					automatico = 1;
 				
-				// Si no está en modo automático, la app podría indicarme
+				// Si no estÃ¡ en modo automÃ¡tico, la app podrÃ­a indicarme
 				// si debo o no prender/apagar la luz o el sistema de riego
 				if( automatico == 0 ) {
 					if( comando == APAGAR_LUZ )
@@ -111,7 +111,7 @@ void loop()
 	Serial.print("; Automatico: ");
 	Serial.println(automatico);
 	
-	// Si está en modo automático, determino si debo encender/apagar la luz o
+	// Si estÃ¡ en modo automÃ¡tico, determino si debo encender/apagar la luz o
 	// el sistema de riego en base a los valores medidos por los sensores
 	if( automatico == 1 ) {
 	
@@ -130,7 +130,7 @@ void loop()
 			apagarRiego();
 	}
 	
-	// Envío el estado del sistema embebido al bluetooth
+	// EnvÃ­o el estado del sistema embebido al bluetooth
 	char JSON [100];
 	sprintf(JSON,"{sensor-luz:%i,sensor-humedad:%i,actuador-luz:%i,actuador-riego:%i,automatico:%i}\r\n", luz, humedad, statusLuz, statusRiego, automatico);
 	Serial1.write(JSON); 
@@ -142,17 +142,15 @@ void loop()
 // Toma los datos del sensor de luz
 uint16_t sensarLuz() {
 
-	// Inicia la transmisión, pide 2 bytes, los almacena y finaliza la transmisión
+	// Inicia la transmisiÃ³n, pide 2 bytes, los almacena y finaliza la transmisiÃ³n
 	int bytes_leidos = 0;
-	Wire.beginTransmission( direccionBH1750 );
 	Wire.requestFrom( direccionBH1750, 2 );
 	while( Wire.available() ) {
 		lecturaBH1750[i] = Wire.read();
 		bytes_leidos++;
 	}
-	Wire.endTransmission();	
 	
-	// Si leí correctamente los 2 bytes, interpreta la lectura y la devuelve
+	// Si leÃ­ correctamente los 2 bytes, interpreta la lectura y la devuelve
 	// sino devuelve -1 indicando que no se pudo realizar la lectura 
 	if( bytes_leidos == 2 )
 		return ( ( lecturaBH1750[0] << 8 ) | lecturaBH1750[1] ) /1.2;
