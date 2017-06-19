@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="14dp"
+    android:visibility="visible"
+    tools:context="soa.seedup.MainActivity">
+
+
+
+    <TextView
+        android:id="@+id/labelDescripcion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_descripcion"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/labelTemperatura"
+        android:layout_width="wrap_content"
+        android:layout_height="27dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/label_temperatura"
+        android:textColor="@android:color/black"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="@+id/labelHumedad"
+        app:layout_constraintTop_toBottomOf="@+id/labelHumedad" />
+
+    <TextView
+        android:id="@+id/labelHumedad"
+        android:layout_width="wrap_content"
+        android:layout_height="27dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/label_humedad"
+        android:textColor="@android:color/black"
+        app:layout_constraintLeft_toLeftOf="@+id/labelLuz"
+        app:layout_constraintTop_toBottomOf="@+id/labelLuz" />
+
+    <TextView
+        android:id="@+id/labelControles"
+        android:layout_width="wrap_content"
+        android:layout_height="27dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="24dp"
+        android:drawableStart="@android:drawable/ic_menu_preferences"
+        android:gravity="center_vertical"
+        android:text="@string/label_controles"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="@+id/labelEstadoActual"
+        app:layout_constraintTop_toBottomOf="@+id/labelTemperatura"
+        tools:layout_editor_absoluteX="14dp" />
+
+    <TextView
+        android:id="@+id/labelEstadoActual"
+        android:layout_width="wrap_content"
+        android:layout_height="27dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="16dp"
+        android:drawableStart="@android:drawable/ic_menu_info_details"
+        android:gravity="center_vertical"
+        android:text="@string/label_estado_actual"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/labelLuz"
+        android:layout_width="wrap_content"
+        android:layout_height="27dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/label_luz"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/labelEstadoActual"
+        app:layout_constraintLeft_toLeftOf="@+id/labelEstadoActual" />
+
+    <Switch
+        android:id="@+id/switchModo"
+        android:layout_width="316dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:enabled="false"
+        android:text="@string/control_manual"
+        app:layout_constraintLeft_toLeftOf="@+id/labelControles"
+        app:layout_constraintTop_toBottomOf="@+id/labelControles" />
+
+    <Switch
+        android:id="@+id/switchLuz"
+        android:layout_width="316dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="8dp"
+        android:enabled="false"
+        android:text="@string/control_luz"
+        app:layout_constraintLeft_toLeftOf="@+id/switchModo"
+        app:layout_constraintTop_toBottomOf="@+id/switchModo" />
+
+    <Switch
+        android:id="@+id/switchRiego"
+        android:layout_width="316dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="8dp"
+        android:enabled="false"
+        android:text="@string/control_riego"
+        app:layout_constraintLeft_toLeftOf="@+id/switchLuz"
+        app:layout_constraintTop_toBottomOf="@+id/switchLuz" />
+
+    <TextView
+        android:id="@+id/txtLuz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="0dp"
+        android:text="@string/valor_sin_dato"
+        app:layout_constraintLeft_toRightOf="@+id/labelLuz"
+        app:layout_constraintTop_toTopOf="@+id/labelLuz" />
+
+    <TextView
+        android:id="@+id/txtHumedad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="0dp"
+        android:text="@string/valor_sin_dato"
+        app:layout_constraintLeft_toRightOf="@+id/labelHumedad"
+        app:layout_constraintTop_toTopOf="@+id/labelHumedad" />
+
+    <TextView
+        android:id="@+id/txtTemperatura"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="0dp"
+        android:text="@string/valor_sin_dato"
+        android:visibility="gone"
+        app:layout_constraintLeft_toRightOf="@+id/labelTemperatura"
+        app:layout_constraintTop_toTopOf="@+id/labelTemperatura" />
+
+    <Button
+        android:id="@+id/btnConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/boton_conectar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchRiego" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/label_estado_sistema"
+        android:textColor="@android:color/black"
+        app:layout_constraintLeft_toLeftOf="@+id/labelDescripcion"
+        app:layout_constraintTop_toBottomOf="@+id/labelDescripcion" />
+
+    <TextView
+        android:id="@+id/txtEstado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="0dp"
+        android:text="@string/estado_desconectado"
+        android:textColor="@android:color/holo_red_dark"
+        app:layout_constraintLeft_toRightOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/textView" />
+
+
+</android.support.constraint.ConstraintLayout>

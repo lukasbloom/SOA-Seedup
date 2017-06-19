@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Seedup</string>
+
+    <string name="label_descripcion">Bienvenido a Seedup, la app desde donde puedes controlar el estado de tu cultivo, darle agua, luz o calor segun lo necesite.</string>
+    <string name="label_estado_sistema">Estado del sistema:</string>
+    <string name="label_estado_actual">Estado actual</string>
+    <string name="label_luz">Luz:</string>
+    <string name="label_humedad">Humedad:</string>
+    <string name="label_temperatura">Temperatura:</string>
+    <string name="label_controles">Controles</string>
+    <string name="control_manual">Modo manual</string>
+    <string name="control_luz">Luz</string>
+    <string name="control_riego">Riego</string>
+    <string name="valor_sin_dato">-</string>
+    <string name="estado_conectado">Conectado</string>
+    <string name="estado_desconectado">Desconectado</string>
+    <string name="estado_conectando">Conectando</string>
+    <string name="boton_conectar">Conectar</string>
+    <string name="boton_desconectar">Desconectar</string>
+</resources>
