@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Vibrator;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -31,16 +33,22 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP.BluetoothStateListener;
 
 import static android.widget.CompoundButton.*;
 
-public class MainActivity extends AppCompatActivity {
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 
-    private TextView txtLuz, txtHumedad, txtTemperatura, txtEstado;
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
+
+    private TextView txtLuz, txtHumedad, txtTemperatura, txtEstado, txtLuzCelu;
     private Button btnConnect;
     private Switch switchLuz, switchRiego, switchModoManual;
     private BluetoothSPP bt;
     private final static int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1234;
     private boolean disableFeedback = false;
-    private String BLUETOOTH_DESTINATION_MAC = "00:21:13:00:7E:32";
-
+    private SensorManager mSensorManager;
+    private Vibrator v;
+    private final static float ACC = 30;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +59,13 @@ public class MainActivity extends AppCompatActivity {
         txtHumedad = (TextView)findViewById(R.id.txtHumedad);
         txtTemperatura = (TextView)findViewById(R.id.txtTemperatura);
         txtEstado = (TextView)findViewById(R.id.txtEstado);
+        txtLuzCelu = (TextView)findViewById(R.id.txtLuzCelu);
+
+        // Obtiene el servicio que da acceso a la info de los sensores
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        // Obtiene el servicio que da acceso al vibrator del celu
+        v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         // Instancia la clase de bluetooth
         bt = new BluetoothSPP(this);
@@ -153,23 +168,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case BluetoothState.STATE_CONNECTED:
                             btnConnect.setEnabled( true );
-                            if( bt.getConnectedDeviceAddress().equals( BLUETOOTH_DESTINATION_MAC ) ) {
-                                switchModoManual.setEnabled( true );
-                                txtEstado.setText( R.string.estado_conectado );
-                                txtEstado.setTextColor( Color.rgb( 0x66, 0x99, 0x00 ) );
-                            }
-                            else {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                                builder.setMessage("La conexión bluetooth se realizó correctamente pero el dispositivo al cual te conectaste no es el correcto. Desconectalo e intenta nuevamente conectándote al sistema hidropónico Seedup.");
-                                builder.setCancelable( false );
-                                builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                });
-                                AlertDialog alert = builder.create();
-                                alert.show();
-                            }
+                            switchModoManual.setEnabled( true );
+                            txtEstado.setText( R.string.estado_conectado );
+                            txtEstado.setTextColor( Color.rgb( 0x66, 0x99, 0x00 ) );
                             btnConnect.setText(R.string.boton_desconectar);
                             break;
                         default:
@@ -179,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                             switchRiego.setEnabled( false );
                             txtHumedad.setText( R.string.valor_sin_dato );
                             txtLuz.setText( R.string.valor_sin_dato );
+                            txtLuzCelu.setText( R.string.valor_sin_dato );
                             txtTemperatura.setText( R.string.valor_sin_dato );
                             txtEstado.setText( R.string.estado_desconectado );
                             txtEstado.setTextColor( Color.rgb( 0xCC, 0x00, 0x00 ) );
@@ -234,20 +236,24 @@ public class MainActivity extends AppCompatActivity {
             switchModoManual.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (!disableFeedback)
-                        sendToBluetooth(isChecked ? "auto-0" : "auto-1");
-                    switchLuz.setEnabled(isChecked);
-                    switchRiego.setEnabled(isChecked);
+                        sendToBluetooth( isChecked ? "auto-0" : "auto-1");
+                    switchLuz.setEnabled( isChecked );
+                    switchRiego.setEnabled( isChecked );
+
                 }
             });
         }
     }
 
+    @Override
     public void onDestroy() {
         super.onDestroy();
         bt.stopService();
+        unregisterSensors();
         System.exit(0);
     }
 
+    @Override
     public void onStart() {
         super.onStart();
         if(bt.isBluetoothAvailable()) {
@@ -261,6 +267,24 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerSensors();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterSensors();
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterSensors();
+        super.onPause();
     }
 
     public void sendToBluetooth( String mensaje ) {
@@ -304,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults ) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults ) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION: {
                 if( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
@@ -319,6 +343,7 @@ public class MainActivity extends AppCompatActivity {
     public void openWarningPopup() {
         ((TextView) new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Petición de permisos")
+
                 .setMessage("Para poder encontrar dispositivos bluetooth cercanos haz click en \"Permitir\" en la siguiente ventana de de petición de permisos")
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
@@ -345,4 +370,45 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), DeviceList.class);
         startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
     }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float[] values = event.values;
+        synchronized (this) {
+            switch (event.sensor.getType()) {
+                case Sensor.TYPE_ACCELEROMETER:
+                    if ((Math.abs(values[0]) > ACC || Math.abs(values[1]) > ACC || Math.abs(values[2]) > ACC)) {
+                        if( switchModoManual.isChecked() ) {
+                            switchLuz.toggle();
+                            v.vibrate(400);
+                        }
+                    }
+                    break;
+                case Sensor.TYPE_LIGHT:
+                    if( txtEstado.getText() == getResources().getString(R.string.estado_conectado) ) {
+                        String txt = event.values[0] + " lux";
+                        txtLuzCelu.setText(txt);
+                    }
+                    break;
+            }
+        }
+    }
+
+
+    private void registerSensors() {
+        boolean done;
+        done = mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        if( !done ) Toast.makeText(this, getResources().getString(R.string.sensor_no_disponible), Toast.LENGTH_SHORT).show();
+        done = mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT), SensorManager.SENSOR_DELAY_NORMAL);
+        if( !done ) Toast.makeText(this, getResources().getString(R.string.sensor_no_disponible), Toast.LENGTH_SHORT).show();
+    }
+
+    private void unregisterSensors() {
+        mSensorManager.unregisterListener(this);
+    }
+
 }
